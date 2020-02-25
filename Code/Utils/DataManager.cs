@@ -2,11 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-public class DataManager<T> : IDataManager<T>
+public class DataManager<T> : IDataManager<T> where T : IParsable, new()
 {
+    public DataManager() { }
+
     public T[] Read(string filename)
     {
-        throw new NotImplementedException();
+        var objects = new List<T>();
+        using (var reader = new StreamReader(filename))
+        {
+            while (!reader.EndOfStream)
+            {
+                var obj = new T();
+                obj.Parse(reader.ReadLine());
+                objects.Add(obj);
+            }
+        }
+        return objects.ToArray();
     }
 
     public void Write(string filename, T[] data)
