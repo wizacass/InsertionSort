@@ -14,12 +14,15 @@ namespace Lab1
                 )
                 );
 
-            runner.Run("Data/small.txt");
-            System.Console.WriteLine(runner.ToString());
-            runner.Sort();
-            System.Console.WriteLine(runner.ToString());
-            runner.Generate(100, "Data/Generated1.txt");
-            runner.Generate(1000, "Data/Generated2.txt");
+            for (int i = 1; i <= 2; i++)
+            {
+                string filename = $"Data/Generated{i}.txt";
+                runner.Generate((int)Math.Pow(10, i), filename);
+                runner.Run(filename);
+                System.Console.WriteLine(runner.ToString());
+                runner.Sort();
+                System.Console.WriteLine(runner.ToString());
+            }
         }
     }
 }

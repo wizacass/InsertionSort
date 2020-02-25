@@ -14,6 +14,11 @@ public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
         var objects = new T[count];
         for (int i = 0; i < count; i++)
         {
+            var obj = GenerateEntry();
+            while (Contains(objects, obj))
+            {
+                obj = GenerateEntry();
+            }
             objects[i] = GenerateEntry();
         }
         return objects;
@@ -24,5 +29,14 @@ public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
         var obj = new T();
         obj.Parse(_dataStringBuilder.GenerateDataString());
         return obj;
+    }
+
+    private bool Contains(T[] objects, T obj)
+    {
+        foreach (var item in objects)
+        {
+            if (obj.Equals(item)) return true;
+        }
+        return false;
     }
 }
