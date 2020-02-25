@@ -37,7 +37,7 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
 
     public override string ToString()
     {
-        return $"{Year}.{Month}.{Day} {Amount}$";
+        return $"{Year}.{Month}.{Day} {Amount}";
     }
 
     public void Parse(string dataString)
@@ -73,8 +73,7 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
         return
             Year == other.Year &&
             Month == other.Month &&
-            Day == other.Day &&
-            Amount == other.Amount;
+            Day == other.Day;
     }
 
     public int CompareTo(Earnings other)

@@ -21,8 +21,14 @@ public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
         return objects.ToArray();
     }
 
-    public void Write(string filename, T[] data)
+    public void Write(T[] data, string filename)
     {
-        throw new NotImplementedException();
+        using (var writer = new StreamWriter(filename))
+        {
+            foreach (var item in data)
+            {
+                writer.WriteLine(item.ToString());
+            }
+        }
     }
 }
