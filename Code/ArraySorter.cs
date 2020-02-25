@@ -2,12 +2,12 @@ using System;
 using System.Linq;
 using System.Text;
 
-public class Sorter<T>
+public class ArraySorter<T>
 {
     private IDataManager<T> _dataManager;
     private T[] _objects;
 
-    public Sorter(IDataManager<T> dataManager)
+    public ArraySorter(IDataManager<T> dataManager)
     {
         _dataManager = dataManager;
     }
