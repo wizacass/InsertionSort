@@ -8,10 +8,12 @@ namespace Lab1
         {
             Console.WriteLine("Hello World!");
             var runner = new Sorter<Earnings>(
-                new DataManager<Earnings>()
+                new ArrayDataManager<Earnings>()
                 );
 
             runner.Run("Data/small.txt");
+            System.Console.WriteLine(runner.ToString());
+            runner.Sort();
             System.Console.WriteLine(runner.ToString());
         }
     }

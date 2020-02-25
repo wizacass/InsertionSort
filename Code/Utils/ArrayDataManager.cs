@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-public class DataManager<T> : IDataManager<T> where T : IParsable, new()
+public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
 {
-    public DataManager() { }
+    public ArrayDataManager() { }
 
     public T[] Read(string filename)
     {

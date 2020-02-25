@@ -1,6 +1,6 @@
 using System;
 
-public class Earnings : IComparable, IParsable
+public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
 {
     public int Year { get; private set; }
     public int Month { get; private set; }
@@ -35,11 +35,6 @@ public class Earnings : IComparable, IParsable
         Amount = amount;
     }
 
-    public int CompareTo(object obj)
-    {
-        throw new NotImplementedException();
-    }
-
     public override string ToString()
     {
         return $"{Year}.{Month}.{Day} {Amount}$";
@@ -66,5 +61,29 @@ public class Earnings : IComparable, IParsable
             System.Console.WriteLine($"Error in pasing Earning data! {ex.Message}");
             throw;
         }
+    }
+
+    public bool Equals(Earnings other)
+    {
+        if (other == null)
+        {
+            return false;
+        }
+
+        return
+            Year == other.Year &&
+            Month == other.Month &&
+            Day == other.Day &&
+            Amount == other.Amount;
+    }
+
+    public int CompareTo(Earnings other)
+    {
+        return
+            Year == other.Year ?
+            Month == other.Month ?
+            Day.CompareTo(other.Day) :
+            Month.CompareTo(other.Month) :
+            Year.CompareTo(other.Year);
     }
 }
