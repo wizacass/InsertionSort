@@ -2,7 +2,7 @@ using System;
 
 public class EarningsDataStringBuilder : IDataStringBuilder
 {
-    private Random _rnd;
+    private readonly Random _rnd;
 
     public EarningsDataStringBuilder()
     {

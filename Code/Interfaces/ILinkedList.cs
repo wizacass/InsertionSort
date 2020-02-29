@@ -1,10 +1,8 @@
-using System;
-
 public interface ILinkedList<T>
 {
-    public T[] ToArray();
+    T[] ToArray();
 
-    public void sort();
+    void sort();
 
-    public ILinkedList<T> sorted();
+    ILinkedList<T> sorted();
 }

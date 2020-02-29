@@ -1,8 +1,9 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
 {
-    private IDataStringBuilder _dataStringBuilder;
+    private readonly IDataStringBuilder _dataStringBuilder;
 
     public DataFactory(IDataStringBuilder dataStringBuilder)
     {
@@ -31,12 +32,8 @@ public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
         return obj;
     }
 
-    private bool Contains(T[] objects, T obj)
+    private static bool Contains(IEnumerable<T> objects, T obj)
     {
-        foreach (var item in objects)
-        {
-            if (obj.Equals(item)) return true;
-        }
-        return false;
+	    return objects.Contains(obj);
     }
 }

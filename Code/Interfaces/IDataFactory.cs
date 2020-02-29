@@ -1,8 +1,6 @@
-using System;
-
 public interface IDataFactory<T>
 {
-    public T GenerateEntry();
+    T GenerateEntry();
 
-    public T[] GenerateEntries(int count);
+    T[] GenerateEntries(int count);
 }

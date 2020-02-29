@@ -2,9 +2,9 @@
 
 namespace Lab1
 {
-    class Program
+	public class Program
     {
-        static void Main(string[] args)
+	    private static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
             var runner = new ArraySorter<Earnings>(
@@ -19,9 +19,9 @@ namespace Lab1
                 string filename = $"Data/Generated{i}.txt";
                 runner.Generate((int)Math.Pow(10, i), filename);
                 runner.Run(filename);
-                System.Console.WriteLine(runner.ToString());
+                Console.WriteLine(runner.ToString());
                 runner.Sort();
-                System.Console.WriteLine(runner.ToString());
+                Console.WriteLine(runner.ToString());
             }
         }
     }
