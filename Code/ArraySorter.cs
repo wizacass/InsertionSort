@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 
-public class ArraySorter<T>
+public class ArraySorter<T> where T : IComparable<T>, IEquatable<T>
 {
     private IDataManager<T> _dataManager;
     private IDataFactory<T> _factory;
@@ -27,7 +27,18 @@ public class ArraySorter<T>
 
     public void Sort()
     {
-        Array.Sort(_objects);
+        for (int i = 1; i < _objects.Length; i++)
+        {
+            var current = _objects[i];
+            int j = i - 1;
+
+            while (j >= 0 && _objects[j].CompareTo(current) > 0)
+            {
+                _objects[j + 1] = _objects[j];
+                j = j - 1;
+            }
+            _objects[j + 1] = current;
+        }
     }
 
     public override string ToString()
