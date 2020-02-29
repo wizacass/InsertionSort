@@ -1,28 +1,55 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Lab1
 {
     public class Program
     {
-        private static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-            var runner = new ArraySorter<Earnings>(
-                new ArrayDataManager<Earnings>(),
-                new DataFactory<Earnings>(
-                    new EarningsDataStringBuilder()
-                )
-                );
+        private string _filePattern = "Data/Generated{0}.txt";
 
-            for (int i = 1; i <= 2; i++)
+        private IDataManager<Earnings> _manager;
+        private IDataFactory<Earnings> _factory;
+        private List<string> _files;
+
+        public Program()
+        {
+            _manager = new ArrayDataManager<Earnings>();
+            _factory = new DataFactory<Earnings>(
+                    new EarningsDataStringBuilder()
+                );
+            // TODO: Get all text files from a specified directory
+            _files = new List<string>();
+        }
+
+        public void Run()
+        {
+            var runner = new ArraySorter<Earnings>(_manager);
+            foreach (var file in _files)
             {
-                string filename = $"Data/Generated{i}.txt";
-                runner.Generate((int)Math.Pow(10, i), filename);
-                runner.Run(filename);
+                runner.Run(file);
                 Console.WriteLine(runner.ToString());
                 runner.Sort();
                 Console.WriteLine(runner.ToString());
             }
+        }
+
+        public void Generate(int count)
+        {
+            var generator = new DataGenerator<Earnings>(_manager, _factory);
+            for (int i = 1; i <= count; i++)
+            {
+                string filename = string.Format(_filePattern, i);
+                _files.Add(filename);
+                System.Console.WriteLine(filename);
+                generator.Generate((int)Math.Pow(10, i), filename);
+            }
+        }
+
+        private static void Main(string[] args)
+        {
+            var p = new Program();
+            p.Generate(2);
+            p.Run();
         }
     }
 }

@@ -4,24 +4,16 @@ using System.Text;
 public class ArraySorter<T> where T : IComparable<T>, IEquatable<T>
 {
     private readonly IDataManager<T> _dataManager;
-    private readonly IDataFactory<T> _factory;
     private T[] _objects;
 
-    public ArraySorter(IDataManager<T> dataManager, IDataFactory<T> factory)
+    public ArraySorter(IDataManager<T> dataManager)
     {
         _dataManager = dataManager;
-        _factory = factory;
     }
 
     public void Run(string filename)
     {
         _objects = _dataManager.Read(filename);
-    }
-
-    public void Generate(int count, string filename)
-    {
-        var entries = _factory.GenerateEntries(count);
-        _dataManager.Write(entries, filename);
     }
 
     public void Sort()
