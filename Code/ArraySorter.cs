@@ -26,7 +26,7 @@ public class ArraySorter<T> where T : IComparable<T>, IEquatable<T>
 
     public void Sort()
     {
-	    for (int i = 0; i < _objects.Length; i++)
+        for (int i = 0; i < _objects.Length; i++)
         {
             var current = _objects[i];
             int j = i - 1;

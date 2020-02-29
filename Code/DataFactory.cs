@@ -34,6 +34,6 @@ public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
 
     private static bool Contains(IEnumerable<T> objects, T obj)
     {
-	    return objects.Contains(obj);
+        return objects.Contains(obj);
     }
 }

@@ -1,4 +1,4 @@
 public interface IDataStringBuilder
 {
-	string GenerateDataString();
+    string GenerateDataString();
 }

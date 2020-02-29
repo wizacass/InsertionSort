@@ -2,9 +2,9 @@
 
 namespace Lab1
 {
-	public class Program
+    public class Program
     {
-	    private static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
             var runner = new ArraySorter<Earnings>(
