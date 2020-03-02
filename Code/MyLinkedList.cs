@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T>
+public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : IComparable<T>
 {
     public int Size { get; private set; }
     public bool IsEmpty => Size == 0;
@@ -88,10 +88,53 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T>
         }
     }
 
-    public void sort()
+    public void Sort()
     {
-        if (IsEmpty) { return; }
-        throw new NotImplementedException();
+        Node sorted = null;
+        Node current = _head;
+        while (current != null)
+        {
+            var next = current.Next;
+            current.Previous = null;
+            current.Next = null;
+            sorted = SortedInsert(sorted, current);
+            current = next;
+        }
+        _head = sorted;
+    }
+
+    private Node SortedInsert(Node sortedHead, Node newNode)
+    {
+        Node current;
+        if (sortedHead == null)
+        {
+            sortedHead = newNode;
+        }
+        else if ((sortedHead).Data.CompareTo(newNode.Data) >= 0)
+        {
+            newNode.Next = sortedHead;
+            newNode.Next.Previous = newNode;
+            sortedHead = newNode;
+        }
+        else
+        {
+            current = sortedHead;
+            while (
+                current.Next != null &&
+                current.Next.Data.CompareTo(newNode.Data) < 0
+                )
+            {
+                current = current.Next;
+            }
+            newNode.Next = current.Next;
+            if (current.Next != null)
+            {
+                newNode.Next.Previous = newNode;
+            }
+            current.Next = newNode;
+            newNode.Previous = current;
+        }
+        return sortedHead;
     }
 
     public T[] ToArray()

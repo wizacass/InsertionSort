@@ -12,7 +12,7 @@ public interface ILinkedList<T>
 
     bool Contains(T element);
 
-    T[] ToArray();
+    void Sort();
 
-    void sort();
+    T[] ToArray();
 }
