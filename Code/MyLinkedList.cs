@@ -49,6 +49,14 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
         Size++;
     }
 
+    public void AddLast(T[] elements)
+    {
+        foreach (var element in elements)
+        {
+            AddLast(element);
+        }
+    }
+
     public bool Contains(T element)
     {
         if (IsEmpty) { return false; }

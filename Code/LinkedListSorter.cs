@@ -1,0 +1,36 @@
+using System;
+using System.Text;
+
+public class LinkedListSorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
+{
+    private readonly IDataManager<T> _dataManager;
+    private MyLinkedList<T> _objects;
+
+    public LinkedListSorter(IDataManager<T> dataManager)
+    {
+        _dataManager = dataManager;
+        _objects = new MyLinkedList<T>();
+    }
+
+    public void Run(string filename)
+    {
+        var data = _dataManager.Read(filename);
+        _objects.AddLast(data);
+    }
+
+    public void Sort()
+    {
+        _objects.Sort();
+    }
+
+    public string StatusString(string label = null)
+    {
+        var sb = new StringBuilder();
+        if (label != null) { sb.AppendLine(label); }
+        foreach (var item in _objects)
+        {
+            sb.AppendLine(item.ToString());
+        }
+        return sb.ToString();
+    }
+}

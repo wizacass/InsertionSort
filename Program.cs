@@ -10,6 +10,7 @@ namespace Lab1
         private IDataManager<Earnings> _manager;
         private IDataFactory<Earnings> _factory;
         private List<string> _files;
+        private List<IRunnable> _runners;
 
         public Program()
         {
@@ -19,17 +20,23 @@ namespace Lab1
                 );
             // TODO: Get all text files from a specified directory
             _files = new List<string>();
+            _runners = new List<IRunnable>();
+            _runners.Add(new ArraySorter<Earnings>(_manager));
+            _runners.Add(new LinkedListSorter<Earnings>(_manager));
         }
 
         public void Run()
         {
-            var runner = new ArraySorter<Earnings>(_manager);
-            foreach (var file in _files)
+            foreach (var runner in _runners)
             {
-                runner.Run(file);
-                Console.WriteLine(runner.ToString());
-                runner.Sort();
-                Console.WriteLine(runner.ToString());
+                Console.WriteLine(runner.GetType());
+                foreach (var file in _files)
+                {
+                    runner.Run(file);
+                    Console.WriteLine(runner.StatusString("Before sorting"));
+                    runner.Sort();
+                    Console.WriteLine(runner.StatusString("After sorting"));
+                }
             }
         }
 
@@ -48,7 +55,7 @@ namespace Lab1
         private static void Main(string[] args)
         {
             var p = new Program();
-            p.Generate(2);
+            p.Generate(1);
             p.Run();
         }
     }
