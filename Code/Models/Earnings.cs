@@ -1,6 +1,7 @@
 using System;
+using System.IO;
 
-public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
+public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable, ISerializable
 {
     public int Year { get; private set; }
     public int Month { get; private set; }
@@ -16,7 +17,7 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
 
     public Earnings(string date, string amount)
     {
-        Parse(new[] {date, amount});
+        Parse(new[] { date, amount });
     }
 
     public Earnings(DateTime date, decimal amount)
@@ -83,5 +84,13 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
                 ? Month == other.Month ? Day.CompareTo(other.Day) :
                 Month.CompareTo(other.Month)
                 : Year.CompareTo(other.Year);
+    }
+
+    public void SerializeToBinary(BinaryWriter bw)
+    {
+        bw.Write((short)Year);  // 2 bytes
+        bw.Write((byte)Month);  // 1 byte
+        bw.Write((byte)Day);    // 1 byte
+        bw.Write(Amount);       // 16 bytes
     }
 }
