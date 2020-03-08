@@ -3,7 +3,12 @@ using System.IO;
 
 public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
 {
-    public ArrayDataManager() { }
+    public string Pattern { get; private set; }
+
+    public ArrayDataManager(string pattern)
+    {
+        Pattern = pattern;
+    }
 
     public T[] Read(string filename)
     {
@@ -21,8 +26,9 @@ public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
         return objects.ToArray();
     }
 
-    public void Write(T[] data, string filename)
+    public void Write(T[] data, string number)
     {
+        string filename = string.Format(Pattern, number);
         using var writer = new StreamWriter(filename);
         foreach (var item in data)
         {

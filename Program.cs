@@ -7,7 +7,7 @@ namespace Lab1
     {
         private const string StandardFilePattern = "Data/Generated{0}.txt";
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
-        private const int Generations = 2;
+        private const int Generations = 1;
 
         private string[] FilePatterns = { StandardFilePattern, BinaryFilePattern };
 
@@ -19,8 +19,8 @@ namespace Lab1
         public Program()
         {
             _managers = new List<IDataManager<Earnings>>();
-            _managers.Add(new ArrayDataManager<Earnings>());
-            _managers.Add(new BinaryDataManager<Earnings>());
+            _managers.Add(new ArrayDataManager<Earnings>(StandardFilePattern));
+            _managers.Add(new BinaryDataManager<Earnings>(BinaryFilePattern));
             _factory = new DataFactory<Earnings>(
                 new EarningsDataStringBuilder()
             );
@@ -34,6 +34,7 @@ namespace Lab1
 
         public void Run()
         {
+            // TODO: Tweak running to support Generations patameter
             foreach (var runner in _runners)
             {
                 Console.WriteLine(runner.GetType());
@@ -47,17 +48,18 @@ namespace Lab1
             }
         }
 
-        public void Generate(int count)
+        public void Generate()
         {
-            for (int i = 1; i <= count; i++)
+            for (int i = 1; i <= Generations; i++)
             {
                 string filename = string.Format(StandardFilePattern, i);
                 _files.Add(filename);
                 Console.WriteLine(filename);
-                var data = _factory.GenerateEntries((int)Math.Pow(10, i));
+                int entriesCount = 10 * (int)Math.Pow(2, i);
+                var data = _factory.GenerateEntries(entriesCount);
                 for (int j = 0; j < _managers.Count; j++)
                 {
-                    _managers[j].Write(data, string.Format(FilePatterns[j], i));
+                    _managers[j].Write(data, i.ToString());
                 }
             }
         }
@@ -65,7 +67,7 @@ namespace Lab1
         private static void Main(string[] args)
         {
             var p = new Program();
-            p.Generate(Generations);
+            p.Generate();
             //p.Run();
         }
     }
