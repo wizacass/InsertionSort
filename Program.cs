@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
+using System.Threading;
 
 namespace Lab1
 {
@@ -7,7 +10,7 @@ namespace Lab1
     {
         private const string StandardFilePattern = "Data/Generated{0}.txt";
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
-        private const int Generations = 1;
+        private const int Generations = 10;
 
         private string[] FilePatterns = { StandardFilePattern, BinaryFilePattern };
 
@@ -38,12 +41,20 @@ namespace Lab1
             foreach (var runner in _runners)
             {
                 Console.WriteLine(runner.GetType());
+                var sb = new StringBuilder();
                 foreach (string file in _files)
                 {
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+
                     runner.Run(file);
-                    Console.WriteLine(runner.StatusString("Before sorting"));
+                    //Console.WriteLine(runner.StatusString("Before sorting"));
+                    var sw = new Stopwatch();
+                    sw.Start();
                     runner.Sort();
-                    Console.WriteLine(runner.StatusString("After sorting"));
+                    sw.Stop();
+                    System.Console.WriteLine("MS: " + sw.ElapsedMilliseconds);
+                    //Console.WriteLine(runner.StatusString("After sorting"));
                 }
             }
         }
@@ -68,7 +79,7 @@ namespace Lab1
         {
             var p = new Program();
             p.Generate();
-            //p.Run();
+            p.Run();
         }
     }
 }
