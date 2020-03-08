@@ -17,17 +17,16 @@ public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
                 objects.Add(obj);
             }
         }
+
         return objects.ToArray();
     }
 
     public void Write(T[] data, string filename)
     {
-        using (var writer = new StreamWriter(filename))
+        using var writer = new StreamWriter(filename);
+        foreach (var item in data)
         {
-            foreach (var item in data)
-            {
-                writer.WriteLine(item.ToString());
-            }
+            writer.WriteLine(item.ToString());
         }
     }
 }

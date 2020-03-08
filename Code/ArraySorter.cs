@@ -28,6 +28,7 @@ public class ArraySorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
                 _objects[j + 1] = _objects[j];
                 j--;
             }
+
             _objects[j + 1] = current;
         }
     }
@@ -35,11 +36,16 @@ public class ArraySorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
     public string StatusString(string label = null)
     {
         var sb = new StringBuilder();
-        if (label != null) { sb.AppendLine(label); }
+        if (label != null)
+        {
+            sb.AppendLine(label);
+        }
+
         foreach (var item in _objects)
         {
             sb.AppendLine(item.ToString());
         }
+
         return sb.ToString();
     }
 }

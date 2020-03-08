@@ -4,7 +4,7 @@ using System.Text;
 public class LinkedListSorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
 {
     private readonly IDataManager<T> _dataManager;
-    private MyLinkedList<T> _objects;
+    private readonly MyLinkedList<T> _objects;
 
     public LinkedListSorter(IDataManager<T> dataManager)
     {
@@ -26,11 +26,16 @@ public class LinkedListSorter<T> : IRunnable where T : IComparable<T>, IEquatabl
     public string StatusString(string label = null)
     {
         var sb = new StringBuilder();
-        if (label != null) { sb.AppendLine(label); }
+        if (label != null)
+        {
+            sb.AppendLine(label);
+        }
+
         foreach (var item in _objects)
         {
             sb.AppendLine(item.ToString());
         }
+
         return sb.ToString();
     }
 }

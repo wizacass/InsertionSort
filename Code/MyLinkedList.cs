@@ -29,6 +29,7 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
             _head.Previous = node;
             _head = node;
         }
+
         Size++;
     }
 
@@ -46,6 +47,7 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
             _tail.Next = node;
             _tail = node;
         }
+
         Size++;
     }
 
@@ -59,7 +61,11 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
 
     public bool Contains(T element)
     {
-        if (IsEmpty) { return false; }
+        if (IsEmpty)
+        {
+            return false;
+        }
+
         foreach (var obj in this)
         {
             if (element.Equals(obj))
@@ -67,6 +73,7 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
                 return true;
             }
         }
+
         return false;
     }
 
@@ -82,24 +89,29 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
 
     public void Remove(T element)
     {
-        if (IsEmpty) { return; }
+        if (IsEmpty)
+        {
+            return;
+        }
+
         for (var node = _head; node != null; node = node.Next)
         {
-            if (element.Equals(node.Data))
+            if (!element.Equals(node.Data))
             {
-                node.Previous.Next = node.Next;
-                node.Next.Previous = node.Previous;
-                node = null;
-                Size--;
-                return;
+                continue;
             }
+
+            node.Previous.Next = node.Next;
+            node.Next.Previous = node.Previous;
+            Size--;
+            return;
         }
     }
 
     public void Sort()
     {
         Node sorted = null;
-        Node current = _head;
+        var current = _head;
         while (current != null)
         {
             var next = current.Next;
@@ -108,12 +120,12 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
             sorted = SortedInsert(sorted, current);
             current = next;
         }
+
         _head = sorted;
     }
 
-    private Node SortedInsert(Node sortedHead, Node newNode)
+    private static Node SortedInsert(Node sortedHead, Node newNode)
     {
-        Node current;
         if (sortedHead == null)
         {
             sortedHead = newNode;
@@ -126,34 +138,42 @@ public class MyLinkedList<T> : ILinkedList<T>, IEnumerable<T> where T : ICompara
         }
         else
         {
-            current = sortedHead;
+            var current = sortedHead;
             while (
                 current.Next != null &&
                 current.Next.Data.CompareTo(newNode.Data) < 0
-                )
+            )
             {
                 current = current.Next;
             }
+
             newNode.Next = current.Next;
-            if (current.Next != null)
+            if (current.Next != null && newNode.Next != null)
             {
                 newNode.Next.Previous = newNode;
             }
+
             current.Next = newNode;
             newNode.Previous = current;
         }
+
         return sortedHead;
     }
 
     public T[] ToArray()
     {
-        if (IsEmpty) { return null; }
+        if (IsEmpty)
+        {
+            return null;
+        }
+
         var array = new T[Size];
         int i = 0;
         foreach (var obj in this)
         {
             array[i++] = obj;
         }
+
         return array;
     }
 

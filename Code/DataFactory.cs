@@ -20,8 +20,10 @@ public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
             {
                 obj = GenerateEntry();
             }
+
             objects[i] = GenerateEntry();
         }
+
         return objects;
     }
 

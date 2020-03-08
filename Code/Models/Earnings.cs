@@ -16,7 +16,7 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
 
     public Earnings(string date, string amount)
     {
-        Parse(new[] { date, amount });
+        Parse(new[] {date, amount});
     }
 
     public Earnings(DateTime date, decimal amount)
@@ -79,10 +79,9 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable
     public int CompareTo(Earnings other)
     {
         return
-            Year == other.Year ?
-            Month == other.Month ?
-            Day.CompareTo(other.Day) :
-            Month.CompareTo(other.Month) :
-            Year.CompareTo(other.Year);
+            Year == other.Year
+                ? Month == other.Month ? Day.CompareTo(other.Day) :
+                Month.CompareTo(other.Month)
+                : Year.CompareTo(other.Year);
     }
 }
