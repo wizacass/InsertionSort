@@ -10,11 +10,13 @@ namespace Lab1
         private const string StandardFilePattern = "Data/Generated{0}.txt";
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
         private const string BinarySortableFilePattern = "Data/BinarySortableGenerated{0}.bin";
-        private const int Generations = 4;
+        private const int Generations = 8;
 
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
         private readonly List<IRunnable> _runners;
+
+        private Logger _logger;
 
         public Program()
         {
@@ -39,43 +41,48 @@ namespace Lab1
 
         public void Run()
         {
-            // TODO: Write proper header
-            Console.Write("C\t");
-            foreach (var runner in _runners)
+            Console.WriteLine($"Running Sorting test with {Generations} data sets.");
+            const int offset = 2;
+            int length = _runners.Count + offset;
+            var headers = new string[length];
+            headers[0] = "No.";
+            headers[1] = "Count";
+            for (int i = 0; i < _runners.Count; i++)
             {
-                Console.Write(runner.Id + "\t");
+                headers[i + offset] = _runners[i].Id;
             }
 
-            Console.WriteLine();
+            _logger = new Logger(headers);
+            _logger.WriteHeader();
 
             for (int i = 1; i <= Generations; i++)
             {
-                Console.Write(CalculateEntries(i) + "\t");
+                int pos = offset;
+                var entries = new Tuple<string, bool>[length];
+                entries[0] = new Tuple<string, bool>(i.ToString(), true);
+                entries[1] = new Tuple<string, bool>(CalculateEntries(i).ToString(), true);
+
                 foreach (var runner in _runners)
                 {
+                    runner.Run(i.ToString());
+
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
-
-                    runner.Run(i.ToString());
 
                     var sw = new Stopwatch();
                     sw.Start();
                     runner.Sort();
                     sw.Stop();
-                    Console.Write(sw.ElapsedMilliseconds + "\t");
-
-                    //TODO: Calculate diff
+                    entries[pos++] = new Tuple<string, bool>(sw.ElapsedMilliseconds.ToString(), true);
                 }
 
-                Console.WriteLine();
-                // TODO: Extract printing
+                _logger.WriteEntry(entries);
             }
-
-            Console.WriteLine();
         }
 
         public void Generate()
         {
+            Console.WriteLine("Generating Entries...");
             for (int i = 1; i <= Generations; i++)
             {
                 int entriesCount = CalculateEntries(i);
@@ -89,7 +96,7 @@ namespace Lab1
 
         private static int CalculateEntries(int i)
         {
-            return 100 * (int) Math.Pow(2, i);
+            return 10 * (int) Math.Pow(2, i);
         }
 
         private static void Main()
