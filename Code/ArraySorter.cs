@@ -11,7 +11,7 @@ public class ArraySorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
         _dataManager = dataManager;
     }
 
-    public string Id => "AS";
+    public string Id => $"AS_{_dataManager.Id}";
 
     public void Run(string fileId)
     {

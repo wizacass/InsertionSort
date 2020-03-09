@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.IO;
 
 public class BinaryDataManager<T> : IDataManager<T> where T : IParsable, ISerializable, new()
 {
+    public string Id => "Bin";
     public string Pattern { get; }
 
     public BinaryDataManager(string pattern)
@@ -11,7 +13,20 @@ public class BinaryDataManager<T> : IDataManager<T> where T : IParsable, ISerial
 
     public T[] Read(string fileId)
     {
-        throw new System.NotImplementedException();
+        string filename = string.Format(Pattern, fileId);
+        var items = new List<T>();
+
+        using (var reader = new BinaryReader(File.Open(filename, FileMode.Open)))
+        {
+            while (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                var item = new T();
+                item.DeserializeFromBinary(reader);
+                items.Add(item);
+            }
+        }
+
+        return items.ToArray();
     }
 
     public void Write(T[] data, string fileId)

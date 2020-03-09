@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
+public class TextDataManager<T> : IDataManager<T> where T : IParsable, new()
 {
+    public string Id => "Txt";
     public string Pattern { get; }
 
-    public ArrayDataManager(string pattern)
+    public TextDataManager(string pattern)
     {
         Pattern = pattern;
     }

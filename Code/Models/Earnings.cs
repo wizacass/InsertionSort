@@ -17,7 +17,7 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable, 
 
     public Earnings(string date, string amount)
     {
-        Parse(new[] { date, amount });
+        Parse(new[] {date, amount});
     }
 
     public Earnings(DateTime date, decimal amount)
@@ -59,7 +59,7 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable, 
         }
         catch (Exception ex)
         {
-            System.Console.WriteLine($"Error in pasing Earning data! {ex.Message}");
+            Console.WriteLine($"Error in parsing Earning data! {ex.Message}");
             throw;
         }
     }
@@ -88,9 +88,17 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable, 
 
     public void SerializeToBinary(BinaryWriter bw)
     {
-        bw.Write((short)Year);  // 2 bytes
-        bw.Write((byte)Month);  // 1 byte
-        bw.Write((byte)Day);    // 1 byte
-        bw.Write(Amount);       // 16 bytes
+        bw.Write((short) Year); // 2 bytes
+        bw.Write((byte) Month); // 1 byte
+        bw.Write((byte) Day); // 1 byte
+        bw.Write(Amount); // 16 bytes
+    }
+
+    public void DeserializeFromBinary(BinaryReader br)
+    {
+        Year = br.ReadInt16();
+        Month = br.ReadByte();
+        Day = br.ReadByte();
+        Amount = br.ReadDecimal();
     }
 }

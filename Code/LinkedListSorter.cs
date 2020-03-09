@@ -12,7 +12,7 @@ public class LinkedListSorter<T> : IRunnable where T : IComparable<T>, IEquatabl
         _objects = new MyLinkedList<T>();
     }
 
-    public string Id => "LLS";
+    public string Id => $"LLS_{_dataManager.Id}";
 
     public void Run(string fileId)
     {

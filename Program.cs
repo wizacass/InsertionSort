@@ -18,7 +18,7 @@ namespace Lab1
         {
             _managers = new List<IDataManager<Earnings>>
             {
-                new ArrayDataManager<Earnings>(StandardFilePattern),
+                new TextDataManager<Earnings>(StandardFilePattern),
                 new BinaryDataManager<Earnings>(BinaryFilePattern)
             };
             _factory = new DataFactory<Earnings>(
@@ -27,7 +27,9 @@ namespace Lab1
             _runners = new List<IRunnable>
             {
                 new ArraySorter<Earnings>(_managers[0]),
-                new LinkedListSorter<Earnings>(_managers[0])
+                new LinkedListSorter<Earnings>(_managers[0]),
+                new ArraySorter<Earnings>(_managers[1]),
+                new LinkedListSorter<Earnings>(_managers[1])
             };
         }
 
@@ -89,7 +91,7 @@ namespace Lab1
         private static void Main(string[] args)
         {
             var p = new Program();
-            p.Generate();
+            //p.Generate();
             p.Run();
         }
     }
