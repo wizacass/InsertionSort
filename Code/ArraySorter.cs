@@ -1,53 +1,56 @@
 using System;
 using System.Text;
 
-public class ArraySorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
+namespace Lab1.Code
 {
-    private readonly IDataManager<T> _dataManager;
-    private T[] _objects;
-
-    public ArraySorter(IDataManager<T> dataManager)
+    public class ArraySorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
     {
-        _dataManager = dataManager;
-    }
+        private readonly IDataManager<T> _dataManager;
+        private T[] _objects;
 
-    public string Id => $"AS_{_dataManager.Id}";
-
-    public void Run(string fileId)
-    {
-        _objects = _dataManager.Read(fileId);
-    }
-
-    public void Sort()
-    {
-        for (int i = 0; i < _objects.Length; i++)
+        public ArraySorter(IDataManager<T> dataManager)
         {
-            var current = _objects[i];
-            int j = i - 1;
+            _dataManager = dataManager;
+        }
 
-            while (j >= 0 && _objects[j].CompareTo(current) > 0)
+        public string Id => $"AS_{_dataManager.Id}";
+
+        public void Run(string fileId)
+        {
+            _objects = _dataManager.Read(fileId);
+        }
+
+        public void Sort()
+        {
+            for (int i = 0; i < _objects.Length; i++)
             {
-                _objects[j + 1] = _objects[j];
-                j--;
+                var current = _objects[i];
+                int j = i - 1;
+
+                while (j >= 0 && _objects[j].CompareTo(current) > 0)
+                {
+                    _objects[j + 1] = _objects[j];
+                    j--;
+                }
+
+                _objects[j + 1] = current;
+            }
+        }
+
+        public string StatusString(string label = null)
+        {
+            var sb = new StringBuilder();
+            if (label != null)
+            {
+                sb.AppendLine(label);
             }
 
-            _objects[j + 1] = current;
-        }
-    }
+            foreach (var item in _objects)
+            {
+                sb.AppendLine(item.ToString());
+            }
 
-    public string StatusString(string label = null)
-    {
-        var sb = new StringBuilder();
-        if (label != null)
-        {
-            sb.AppendLine(label);
+            return sb.ToString();
         }
-
-        foreach (var item in _objects)
-        {
-            sb.AppendLine(item.ToString());
-        }
-
-        return sb.ToString();
     }
 }

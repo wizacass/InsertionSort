@@ -1,41 +1,44 @@
 using System.Collections.Generic;
 using System.Linq;
 
-public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
+namespace Lab1.Code
 {
-    private readonly IDataStringBuilder _dataStringBuilder;
-
-    public DataFactory(IDataStringBuilder dataStringBuilder)
+    public class DataFactory<T> : IDataFactory<T> where T : IParsable, new()
     {
-        _dataStringBuilder = dataStringBuilder;
-    }
+        private readonly IDataStringBuilder _dataStringBuilder;
 
-    public T[] GenerateEntries(int count)
-    {
-        var objects = new T[count];
-        for (int i = 0; i < count; i++)
+        public DataFactory(IDataStringBuilder dataStringBuilder)
         {
-            var obj = GenerateEntry();
-            while (Contains(objects, obj))
-            {
-                obj = GenerateEntry();
-            }
-
-            objects[i] = GenerateEntry();
+            _dataStringBuilder = dataStringBuilder;
         }
 
-        return objects;
-    }
+        public T[] GenerateEntries(int count)
+        {
+            var objects = new T[count];
+            for (int i = 0; i < count; i++)
+            {
+                var obj = GenerateEntry();
+                while (Contains(objects, obj))
+                {
+                    obj = GenerateEntry();
+                }
 
-    public T GenerateEntry()
-    {
-        var obj = new T();
-        obj.Parse(_dataStringBuilder.GenerateDataString());
-        return obj;
-    }
+                objects[i] = GenerateEntry();
+            }
 
-    private static bool Contains(IEnumerable<T> objects, T obj)
-    {
-        return objects.Contains(obj);
+            return objects;
+        }
+
+        public T GenerateEntry()
+        {
+            var obj = new T();
+            obj.Parse(_dataStringBuilder.GenerateDataString());
+            return obj;
+        }
+
+        private static bool Contains(IEnumerable<T> objects, T obj)
+        {
+            return objects.Contains(obj);
+        }
     }
 }

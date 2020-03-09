@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Lab1.Code;
+using Lab1.Code.Models;
 
 namespace Lab1
 {

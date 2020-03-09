@@ -2,48 +2,51 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-public class TextDataManager<T> : IDataManager<T> where T : IParsable, new()
+namespace Lab1.Code
 {
-    public string Id => "Txt";
-    public string Pattern { get; }
-
-    public TextDataManager(string pattern)
+    public class TextDataManager<T> : IDataManager<T> where T : IParsable, new()
     {
-        Pattern = pattern;
-    }
+        public string Id => "Txt";
+        public string Pattern { get; }
 
-    public T[] Read(string fileId)
-    {
-        string filename = string.Format(Pattern, fileId);
-        try
+        public TextDataManager(string pattern)
         {
-            var objects = new List<T>();
-            using (var reader = new StreamReader(filename))
+            Pattern = pattern;
+        }
+
+        public T[] Read(string fileId)
+        {
+            string filename = string.Format(Pattern, fileId);
+            try
             {
-                while (!reader.EndOfStream)
+                var objects = new List<T>();
+                using (var reader = new StreamReader(filename))
                 {
-                    var obj = new T();
-                    obj.Parse(reader.ReadLine());
-                    objects.Add(obj);
+                    while (!reader.EndOfStream)
+                    {
+                        var obj = new T();
+                        obj.Parse(reader.ReadLine());
+                        objects.Add(obj);
+                    }
                 }
+
+                return objects.ToArray();
             }
-
-            return objects.ToArray();
+            catch (Exception)
+            {
+                Console.WriteLine($"File: {filename} not found!");
+                return null;
+            }
         }
-        catch (Exception)
-        {
-            Console.WriteLine($"File: {filename} not found!");
-            return null;
-        }
-    }
 
-    public void Write(T[] data, string fileId)
-    {
-        string filename = string.Format(Pattern, fileId);
-        using var writer = new StreamWriter(filename);
-        foreach (var item in data)
+        public void Write(T[] data, string fileId)
         {
-            writer.WriteLine(item.ToString());
+            string filename = string.Format(Pattern, fileId);
+            using var writer = new StreamWriter(filename);
+            foreach (var item in data)
+            {
+                writer.WriteLine(item.ToString());
+            }
         }
     }
 }

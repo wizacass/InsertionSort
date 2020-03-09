@@ -1,43 +1,46 @@
 using System;
 using System.Text;
 
-public class LinkedListSorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
+namespace Lab1.Code
 {
-    private readonly IDataManager<T> _dataManager;
-    private readonly MyLinkedList<T> _objects;
-
-    public LinkedListSorter(IDataManager<T> dataManager)
+    public class LinkedListSorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
     {
-        _dataManager = dataManager;
-        _objects = new MyLinkedList<T>();
-    }
+        private readonly IDataManager<T> _dataManager;
+        private readonly MyLinkedList<T> _objects;
 
-    public string Id => $"LLS_{_dataManager.Id}";
-
-    public void Run(string fileId)
-    {
-        var data = _dataManager.Read(fileId);
-        _objects.AddLast(data);
-    }
-
-    public void Sort()
-    {
-        _objects.Sort();
-    }
-
-    public string StatusString(string label = null)
-    {
-        var sb = new StringBuilder();
-        if (label != null)
+        public LinkedListSorter(IDataManager<T> dataManager)
         {
-            sb.AppendLine(label);
+            _dataManager = dataManager;
+            _objects = new MyLinkedList<T>();
         }
 
-        foreach (var item in _objects)
+        public string Id => $"LLS_{_dataManager.Id}";
+
+        public void Run(string fileId)
         {
-            sb.AppendLine(item.ToString());
+            var data = _dataManager.Read(fileId);
+            _objects.AddLast(data);
         }
 
-        return sb.ToString();
+        public void Sort()
+        {
+            _objects.Sort();
+        }
+
+        public string StatusString(string label = null)
+        {
+            var sb = new StringBuilder();
+            if (label != null)
+            {
+                sb.AppendLine(label);
+            }
+
+            foreach (var item in _objects)
+            {
+                sb.AppendLine(item.ToString());
+            }
+
+            return sb.ToString();
+        }
     }
 }
