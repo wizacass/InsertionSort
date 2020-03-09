@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
-using System.Threading;
 
 namespace Lab1
 {
@@ -12,22 +10,20 @@ namespace Lab1
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
         private const int Generations = 10;
 
-        private string[] FilePatterns = { StandardFilePattern, BinaryFilePattern };
-
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
-        private readonly List<string> _files;
         private readonly List<IRunnable> _runners;
 
         public Program()
         {
-            _managers = new List<IDataManager<Earnings>>();
-            _managers.Add(new ArrayDataManager<Earnings>(StandardFilePattern));
-            _managers.Add(new BinaryDataManager<Earnings>(BinaryFilePattern));
+            _managers = new List<IDataManager<Earnings>>
+            {
+                new ArrayDataManager<Earnings>(StandardFilePattern),
+                new BinaryDataManager<Earnings>(BinaryFilePattern)
+            };
             _factory = new DataFactory<Earnings>(
                 new EarningsDataStringBuilder()
             );
-            _files = new List<string>();
             _runners = new List<IRunnable>
             {
                 new ArraySorter<Earnings>(_managers[0]),
@@ -37,42 +33,57 @@ namespace Lab1
 
         public void Run()
         {
-            // TODO: Tweak running to support Generations patameter
+            // TODO: Write proper header
+            Console.Write("C\t");
             foreach (var runner in _runners)
             {
-                Console.WriteLine(runner.GetType());
-                var sb = new StringBuilder();
-                foreach (string file in _files)
+                Console.Write(runner.Id + "\t");
+            }
+
+            Console.WriteLine();
+
+            for (int i = 1; i <= Generations; i++)
+            {
+                Console.Write(CalculateEntries(i) + "\t");
+                foreach (var runner in _runners)
                 {
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
 
-                    runner.Run(file);
-                    //Console.WriteLine(runner.StatusString("Before sorting"));
+                    runner.Run(i.ToString());
+
                     var sw = new Stopwatch();
                     sw.Start();
                     runner.Sort();
                     sw.Stop();
-                    System.Console.WriteLine("MS: " + sw.ElapsedMilliseconds);
-                    //Console.WriteLine(runner.StatusString("After sorting"));
+                    Console.Write(sw.ElapsedMilliseconds + "\t");
+
+                    //TODO: Calculate diff
                 }
+
+                Console.WriteLine();
+                // TODO: Extract printing
             }
+
+            Console.WriteLine();
         }
 
         public void Generate()
         {
             for (int i = 1; i <= Generations; i++)
             {
-                string filename = string.Format(StandardFilePattern, i);
-                _files.Add(filename);
-                Console.WriteLine(filename);
-                int entriesCount = 10 * (int)Math.Pow(2, i);
+                int entriesCount = CalculateEntries(i);
                 var data = _factory.GenerateEntries(entriesCount);
-                for (int j = 0; j < _managers.Count; j++)
+                foreach (var manager in _managers)
                 {
-                    _managers[j].Write(data, i.ToString());
+                    manager.Write(data, i.ToString());
                 }
             }
+        }
+
+        private static int CalculateEntries(int i)
+        {
+            return 10 * (int) Math.Pow(2, i);
         }
 
         private static void Main(string[] args)

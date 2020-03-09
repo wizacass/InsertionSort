@@ -1,34 +1,44 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 public class ArrayDataManager<T> : IDataManager<T> where T : IParsable, new()
 {
-    public string Pattern { get; private set; }
+    public string Pattern { get; }
 
     public ArrayDataManager(string pattern)
     {
         Pattern = pattern;
     }
 
-    public T[] Read(string filename)
+    public T[] Read(string fileId)
     {
-        var objects = new List<T>();
-        using (var reader = new StreamReader(filename))
+        string filename = string.Format(Pattern, fileId);
+        try
         {
-            while (!reader.EndOfStream)
+            var objects = new List<T>();
+            using (var reader = new StreamReader(filename))
             {
-                var obj = new T();
-                obj.Parse(reader.ReadLine());
-                objects.Add(obj);
+                while (!reader.EndOfStream)
+                {
+                    var obj = new T();
+                    obj.Parse(reader.ReadLine());
+                    objects.Add(obj);
+                }
             }
-        }
 
-        return objects.ToArray();
+            return objects.ToArray();
+        }
+        catch (Exception)
+        {
+            Console.WriteLine($"File: {filename} not found!");
+            return null;
+        }
     }
 
-    public void Write(T[] data, string number)
+    public void Write(T[] data, string fileId)
     {
-        string filename = string.Format(Pattern, number);
+        string filename = string.Format(Pattern, fileId);
         using var writer = new StreamWriter(filename);
         foreach (var item in data)
         {

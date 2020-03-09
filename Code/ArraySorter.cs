@@ -11,9 +11,11 @@ public class ArraySorter<T> : IRunnable where T : IComparable<T>, IEquatable<T>
         _dataManager = dataManager;
     }
 
-    public void Run(string filename)
+    public string Id => "AS";
+
+    public void Run(string fileId)
     {
-        _objects = _dataManager.Read(filename);
+        _objects = _dataManager.Read(fileId);
     }
 
     public void Sort()

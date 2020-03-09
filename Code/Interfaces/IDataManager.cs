@@ -1,6 +1,8 @@
 public interface IDataManager<T>
 {
-    T[] Read(string filename);
+    string Pattern { get; }
 
-    void Write(T[] data, string filename);
+    T[] Read(string fileId);
+
+    void Write(T[] data, string fileId);
 }
