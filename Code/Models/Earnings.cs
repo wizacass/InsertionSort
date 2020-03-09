@@ -3,6 +3,8 @@ using System.IO;
 
 public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable, ISerializable
 {
+    public int ByteSize => 20;
+
     public int Year { get; private set; }
     public int Month { get; private set; }
     public int Day { get; private set; }
@@ -60,7 +62,6 @@ public class Earnings : IComparable<Earnings>, IEquatable<Earnings>, IParsable, 
         catch (Exception ex)
         {
             Console.WriteLine($"Error in parsing Earning data! {ex.Message}");
-            throw;
         }
     }
 

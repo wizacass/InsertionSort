@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Lab1.Code;
 
 namespace Lab1
 {
@@ -8,7 +9,8 @@ namespace Lab1
     {
         private const string StandardFilePattern = "Data/Generated{0}.txt";
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
-        private const int Generations = 10;
+        private const string BinarySortableFilePattern = "Data/BinarySortableGenerated{0}.bin";
+        private const int Generations = 4;
 
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
@@ -19,7 +21,8 @@ namespace Lab1
             _managers = new List<IDataManager<Earnings>>
             {
                 new TextDataManager<Earnings>(StandardFilePattern),
-                new BinaryDataManager<Earnings>(BinaryFilePattern)
+                new BinaryDataManager<Earnings>(BinaryFilePattern),
+                new BinaryDataManager<Earnings>(BinarySortableFilePattern)
             };
             _factory = new DataFactory<Earnings>(
                 new EarningsDataStringBuilder()
@@ -29,7 +32,8 @@ namespace Lab1
                 new ArraySorter<Earnings>(_managers[0]),
                 new LinkedListSorter<Earnings>(_managers[0]),
                 new ArraySorter<Earnings>(_managers[1]),
-                new LinkedListSorter<Earnings>(_managers[1])
+                new LinkedListSorter<Earnings>(_managers[1]),
+                new BinaryFileSorter<Earnings>(BinarySortableFilePattern)
             };
         }
 
@@ -85,13 +89,13 @@ namespace Lab1
 
         private static int CalculateEntries(int i)
         {
-            return 10 * (int) Math.Pow(2, i);
+            return 100 * (int) Math.Pow(2, i);
         }
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             var p = new Program();
-            //p.Generate();
+            p.Generate();
             p.Run();
         }
     }
