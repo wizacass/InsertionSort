@@ -41,7 +41,8 @@ namespace Lab1.Code
             using var writer = new BinaryWriter(File.Open(filename, FileMode.Create));
             foreach (var item in data)
             {
-                writer.Write(_count++);
+                int next = (++_count % (data.Length)) ;
+                writer.Write(next);
                 item.SerializeToBinary(writer);
             }
         }

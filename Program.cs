@@ -13,7 +13,7 @@ namespace Lab1
         private const string BinaryArraySortableFilePattern = "Data/BinaryArraySortableGenerated{0}.bin";
         private const string BinaryLinkSortableFilePattern = "Data/BinaryLinkSortableGenerated{0}.bin";
 
-        private const int Generations = 4;
+        private const int Generations = 1;
 
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
@@ -37,10 +37,10 @@ namespace Lab1
             {
                 //new ArraySorter<Earnings>(_managers[0]),
                 //new LinkedListSorter<Earnings>(_managers[0]),
-                new ArraySorter<Earnings>(_managers[1]),
-                new LinkedListSorter<Earnings>(_managers[1]),
-                new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern),
-                new BinaryFileLinkSorter<Earnings>()
+                //new ArraySorter<Earnings>(_managers[1]),
+                //new LinkedListSorter<Earnings>(_managers[1]),
+                //new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern),
+                new BinaryFileLinkSorter<Earnings>(BinaryLinkSortableFilePattern)
             };
         }
 
