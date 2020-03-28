@@ -25,9 +25,10 @@ namespace Lab1
         {
             _managers = new List<IDataManager<Earnings>>
             {
-                //new TextDataManager<Earnings>(StandardFilePattern),
+                // new TextDataManager<Earnings>(StandardFilePattern),
                 new BinaryDataManager<Earnings>(BinaryFilePattern),
-                new BinaryDataManager<Earnings>(BinaryArraySortableFilePattern)
+                new BinaryDataManager<Earnings>(BinaryArraySortableFilePattern),
+                new BinaryLinkDataManager<Earnings>(BinaryLinkSortableFilePattern)
             };
             _factory = new DataFactory<Earnings>(
                 new EarningsDataStringBuilder()
@@ -38,7 +39,8 @@ namespace Lab1
                 //new LinkedListSorter<Earnings>(_managers[0]),
                 new ArraySorter<Earnings>(_managers[1]),
                 new LinkedListSorter<Earnings>(_managers[1]),
-                new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern)
+                new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern),
+                new BinaryFileLinkSorter<Earnings>()
             };
         }
 
