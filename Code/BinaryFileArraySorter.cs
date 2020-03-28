@@ -3,7 +3,7 @@ using System.IO;
 
 namespace Lab1.Code
 {
-    public class BinaryFileSorter<T> : IRunnable where T : IComparable<T>, ISerializable, new()
+    public class BinaryFileArraySorter<T> : IRunnable where T : IComparable<T>, ISerializable, new()
     {
         public string Id => "NoMem";
 
@@ -11,7 +11,7 @@ namespace Lab1.Code
         private readonly string _pattern;
         private readonly T _typeInstance;
 
-        public BinaryFileSorter(string pattern)
+        public BinaryFileArraySorter(string pattern)
         {
             _pattern = pattern;
             _typeInstance = new T();

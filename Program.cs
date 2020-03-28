@@ -10,8 +10,10 @@ namespace Lab1
     {
         private const string StandardFilePattern = "Data/Generated{0}.txt";
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
-        private const string BinarySortableFilePattern = "Data/BinarySortableGenerated{0}.bin";
-        private const int Generations = 8;
+        private const string BinaryArraySortableFilePattern = "Data/BinaryArraySortableGenerated{0}.bin";
+        private const string BinaryLinkSortableFilePattern = "Data/BinaryLinkSortableGenerated{0}.bin";
+
+        private const int Generations = 4;
 
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
@@ -23,20 +25,20 @@ namespace Lab1
         {
             _managers = new List<IDataManager<Earnings>>
             {
-                new TextDataManager<Earnings>(StandardFilePattern),
+                //new TextDataManager<Earnings>(StandardFilePattern),
                 new BinaryDataManager<Earnings>(BinaryFilePattern),
-                new BinaryDataManager<Earnings>(BinarySortableFilePattern)
+                new BinaryDataManager<Earnings>(BinaryArraySortableFilePattern)
             };
             _factory = new DataFactory<Earnings>(
                 new EarningsDataStringBuilder()
             );
             _runners = new List<IRunnable>
             {
-                new ArraySorter<Earnings>(_managers[0]),
-                new LinkedListSorter<Earnings>(_managers[0]),
+                //new ArraySorter<Earnings>(_managers[0]),
+                //new LinkedListSorter<Earnings>(_managers[0]),
                 new ArraySorter<Earnings>(_managers[1]),
                 new LinkedListSorter<Earnings>(_managers[1]),
-                new BinaryFileSorter<Earnings>(BinarySortableFilePattern)
+                new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern)
             };
         }
 
@@ -97,7 +99,7 @@ namespace Lab1
 
         private static int CalculateEntries(int i)
         {
-            return 10 * (int) Math.Pow(2, i);
+            return 10 * (int)Math.Pow(2, i);
         }
 
         private static void Main()
