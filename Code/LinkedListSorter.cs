@@ -14,7 +14,7 @@ namespace Lab1.Code
             _objects = new MyLinkedList<T>();
         }
 
-        public string Id => $"LLS_{_dataManager.Id}";
+        public string Id => $"LLS_Mem_{_dataManager.Id}";
 
         public void Run(string fileId)
         {

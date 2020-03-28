@@ -13,7 +13,7 @@ namespace Lab1.Code
             _dataManager = dataManager;
         }
 
-        public string Id => $"AS_{_dataManager.Id}";
+        public string Id => $"AS_Mem_{_dataManager.Id}";
 
         public void Run(string fileId)
         {

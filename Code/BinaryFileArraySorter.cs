@@ -5,7 +5,7 @@ namespace Lab1.Code
 {
     public class BinaryFileArraySorter<T> : IRunnable where T : IComparable<T>, ISerializable, new()
     {
-        public string Id => "NoMem";
+        public string Id => "AS_File";
 
         private string _filename;
         private readonly string _pattern;
