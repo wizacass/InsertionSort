@@ -7,3 +7,4 @@ obj/
 BuildnRun.sh
 Data/
 *.sln*
+.DS_Store
