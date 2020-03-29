@@ -11,11 +11,14 @@ namespace Lab1.Code
             public int CurrentRef { get; }
             public int NextRef { get; set; }
 
-            public Node(T data, int currentRef, int? nextRef = null)
+            public int PrevRef { get; set; }
+
+            public Node(T data, int currentRef, int? nextRef = null, int? prevRef = null)
             {
                 Data = data;
                 CurrentRef = currentRef;
-                NextRef = nextRef ?? 0;
+                NextRef = nextRef ?? -1;
+                PrevRef = prevRef ?? -1;
             }
         }
 
@@ -23,6 +26,7 @@ namespace Lab1.Code
 
         private const int IndexSize = 4;
 
+        private int ByteSize => _typeInstance.ByteSize + 2 * IndexSize;
         private string _filename;
         private readonly string _pattern;
         private readonly T _typeInstance;
@@ -44,13 +48,28 @@ namespace Lab1.Code
             using var reader = new BinaryReader(fs);
             using var writer = new BinaryWriter(fs);
 
-            int next = 0;
-            do
+            // int next = 0;
+            // while (next != -1)
+            // {
+            //     var currentNode = ReadOne(reader, next);
+            //     next = currentNode.NextRef;
+            //     Console.WriteLine($"{currentNode.PrevRef,3} <- [{currentNode.Data.ToString(),-16}] -> {currentNode.NextRef}");
+            // }
+
+            var current = Head(fs, reader);
+            Console.WriteLine($"{current.PrevRef,3} <- [{current.Data.ToString(),-16}] -> {current.NextRef}");
+            while (current.NextRef != -1)
             {
-                var currentNode = ReadOne(reader, next);
-                next = currentNode.NextRef;
-                Console.WriteLine($"{currentNode.Data.ToString(),-18}-> {currentNode.NextRef}");
-            } while (next != 0);
+                var previous = current;
+                current = ReadOne(reader, current.NextRef);
+                Console.WriteLine($"{current.PrevRef,3} <- [{current.Data.ToString(),-16}] -> {current.NextRef}");
+
+                while (previous.PrevRef != -1 && current.Data.CompareTo(previous.Data) < 0)
+                {
+                    System.Console.WriteLine("Test!");
+                    previous = ReadOne(reader, previous.PrevRef);
+                }
+            }
 
             // Node sorted = null;
             // var current = Head(reader);
@@ -67,9 +86,18 @@ namespace Lab1.Code
             fs.Close();
         }
 
-        private Node Head(BinaryReader br)
+        private Node Head(FileStream fs, BinaryReader br)
         {
-            return ReadOne(br, 0);
+            long length = GetElementsCount(fs);
+            for (int i = 0; i < length; i++)
+            {
+                var node = ReadOne(br, i);
+                if (node.PrevRef == -1)
+                {
+                    return node;
+                }
+            }
+            return null;
         }
 
         public string StatusString(string label = null)
@@ -116,31 +144,32 @@ namespace Lab1.Code
         private Node ReadOne(BinaryReader br, int i)
         {
             var obj = new T();
-            int k = GetPosition(i);
+            int k = i * ByteSize;
             br.BaseStream.Seek(k, SeekOrigin.Begin);
             int next = br.ReadInt32();
+            int Previous = br.ReadInt32();
             obj.DeserializeFromBinary(br);
 
-            return new Node(obj, i, next);
+            return new Node(obj, i, next, Previous);
         }
 
         private void WriteOne(BinaryWriter bw, T obj, int i)
         {
-            int k = GetPosition(i);
+            int k = i * ByteSize;
             bw.BaseStream.Seek(k, SeekOrigin.Begin);
             obj.SerializeToBinary(bw);
         }
 
         private void WriteIndex(BinaryWriter bw, int index, int i)
         {
-            int k = GetPosition(i);
+            int k = i * ByteSize;
             bw.BaseStream.Seek(k, SeekOrigin.Begin);
             bw.Write(index);
         }
 
-        private int GetPosition(int i)
+        private long GetElementsCount(FileStream fs)
         {
-            return i * (_typeInstance.ByteSize + IndexSize);
+            return fs.Length / ByteSize;
         }
     }
 }

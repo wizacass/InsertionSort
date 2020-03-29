@@ -107,7 +107,7 @@ namespace Lab1
         private static void Main()
         {
             var p = new Program();
-            //p.Generate();
+            p.Generate();
             p.Run();
         }
     }

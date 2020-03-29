@@ -31,7 +31,7 @@ namespace Lab1.Code
                 int next = 0;
                 do
                 {
-                    (var currentObj, int nextRef) = ReadOne(reader, next);
+                    (var currentObj, int nextRef, int previousRef) = ReadOne(reader, next);
                     next = nextRef;
                     items.Add(currentObj);
                 } while (next != 0);
@@ -46,21 +46,23 @@ namespace Lab1.Code
             using var writer = new BinaryWriter(File.Open(filename, FileMode.Create));
             foreach (var item in data)
             {
-                int next = (++_count % (data.Length));
+                int next = ++_count == data.Length ? -1 : _count;
                 writer.Write(next);
+                writer.Write(_count - 2);
                 item.SerializeToBinary(writer);
             }
         }
 
-        private Tuple<T, int> ReadOne(BinaryReader br, int i)
+        private Tuple<T, int, int> ReadOne(BinaryReader br, int i)
         {
             var obj = new T();
-            int k = i * (_typeInstance.ByteSize + IndexSize);
+            int k = i * (_typeInstance.ByteSize + IndexSize * 2);
             br.BaseStream.Seek(k, SeekOrigin.Begin);
             int next = br.ReadInt32();
+            int previous = br.ReadInt32();
             obj.DeserializeFromBinary(br);
 
-            return new Tuple<T, int>(obj, next);
+            return new Tuple<T, int, int>(obj, next, previous);
         }
     }
 }
