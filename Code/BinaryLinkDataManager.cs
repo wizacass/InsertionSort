@@ -9,11 +9,16 @@ namespace Lab1.Code
         public string Id => "BinLink";
         public string Pattern { get; }
 
+        private const int IndexSize = 4;
+
+        private readonly T _typeInstance;
+
         private int _count = 0;
 
         public BinaryLinkDataManager(string pattern)
         {
             Pattern = pattern;
+            _typeInstance = new T();
         }
 
         public T[] Read(string fileId)
@@ -23,13 +28,13 @@ namespace Lab1.Code
 
             using (var reader = new BinaryReader(File.Open(filename, FileMode.Open)))
             {
-                while (reader.BaseStream.Position != reader.BaseStream.Length)
+                int next = 0;
+                do
                 {
-                    int index = reader.ReadInt32();
-                    var item = new T();
-                    item.DeserializeFromBinary(reader);
-                    items.Add(item);
-                }
+                    (var currentObj, int nextRef) = ReadOne(reader, next);
+                    next = nextRef;
+                    items.Add(currentObj);
+                } while (next != 0);
             }
 
             return items.ToArray();
@@ -41,10 +46,21 @@ namespace Lab1.Code
             using var writer = new BinaryWriter(File.Open(filename, FileMode.Create));
             foreach (var item in data)
             {
-                int next = (++_count % (data.Length)) ;
+                int next = (++_count % (data.Length));
                 writer.Write(next);
                 item.SerializeToBinary(writer);
             }
+        }
+
+        private Tuple<T, int> ReadOne(BinaryReader br, int i)
+        {
+            var obj = new T();
+            int k = i * (_typeInstance.ByteSize + IndexSize);
+            br.BaseStream.Seek(k, SeekOrigin.Begin);
+            int next = br.ReadInt32();
+            obj.DeserializeFromBinary(br);
+
+            return new Tuple<T, int>(obj, next);
         }
     }
 }

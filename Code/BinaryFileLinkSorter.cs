@@ -30,14 +30,25 @@ namespace Lab1.Code
             using var reader = new BinaryReader(fs);
             using var writer = new BinaryWriter(fs);
 
-            long elementsCount = fs.Length / (_typeInstance.ByteSize + IndexSize);
-            for (int i = 0; i < elementsCount; i++)
+            //long elementsCount = fs.Length / (_typeInstance.ByteSize + IndexSize);
+            //var currentNode = ReadOne(reader, 0);
+            //int head = currentNode.Item2;
+            int next = 0;
+            do
+            {
+                (var currentObj, int nextRef) = ReadOne(reader, next); 
+                next = nextRef;
+                Console.WriteLine($"{currentObj.ToString(),-18}-> {nextRef}");
+            } while (next != 0);
+
+
+            /* for (int i = 0; i < elementsCount; i++)
             {
                 var current = ReadOne(reader, i);
                 Console.WriteLine(current.ToString());
 
 
-                /*int j = i - 1;
+                int j = i - 1;
                 while (j >= 0 && ReadOne(reader, j).CompareTo(current) > 0)
                 {
                     WriteOne(writer, ReadOne(reader, j), j + 1);
@@ -45,8 +56,8 @@ namespace Lab1.Code
                 }
 
                 WriteOne(writer, current, j + 1);
-    */        
-            }
+
+            }*/
 
             fs.Close();
         }
@@ -56,8 +67,7 @@ namespace Lab1.Code
             throw new NotImplementedException();
         }
 
-        // TODO: Return type Tuple<T, int>obj&nxt
-        private T ReadOne(BinaryReader br, int i)
+        private Tuple<T, int> ReadOne(BinaryReader br, int i)
         {
             var obj = new T();
             int k = i * (_typeInstance.ByteSize + IndexSize);
@@ -65,8 +75,7 @@ namespace Lab1.Code
             int next = br.ReadInt32();
             obj.DeserializeFromBinary(br);
 
-            Console.WriteLine("Next: " + next);
-            return obj;
+            return new Tuple<T, int>(obj, next);
         }
 
         private void WriteOne(BinaryWriter bw, T obj, int i)
@@ -76,6 +85,15 @@ namespace Lab1.Code
             obj.SerializeToBinary(bw);
         }
 
-        // TODO: private void Swap(int i, int j)
+        private void Swap(BinaryReader br, BinaryWriter bw, int i, int j)
+        {
+            throw new NotImplementedException();
+
+            int pos1 = i * (_typeInstance.ByteSize + IndexSize);
+            int pos2 = j * (_typeInstance.ByteSize + IndexSize);
+            
+            br.BaseStream.Seek(pos1, SeekOrigin.Begin);
+            int next = br.ReadInt32();
+        }
     }
 }
