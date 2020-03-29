@@ -5,6 +5,20 @@ namespace Lab1.Code
 {
     public class BinaryFileLinkSorter<T> : IRunnable where T : IComparable<T>, ISerializable, new()
     {
+        private sealed class Node
+        {
+            public T Data { get; }
+            public int CurrentRef { get; }
+            public int NextRef { get; set; }
+
+            public Node(T data, int currentRef, int? nextRef = null)
+            {
+                Data = data;
+                CurrentRef = currentRef;
+                NextRef = nextRef ?? 0;
+            }
+        }
+
         public string Id => "LLS_File";
 
         private const int IndexSize = 4;
@@ -30,27 +44,32 @@ namespace Lab1.Code
             using var reader = new BinaryReader(fs);
             using var writer = new BinaryWriter(fs);
 
-//            int next = 0;
-//            do
-//            {
-//                (var currentObj, int nextRef) = ReadOne(reader, next);
-//                next = nextRef;
-//                Console.WriteLine($"{currentObj.ToString(),-18}-> {nextRef}");
-//            } while (next != 0);
-
-            Tuple<T, int> sorted = null;
-            var current = ReadOne(reader, 0);
-            while (current.Item2 != 0)
+            int next = 0;
+            do
             {
-                var next = ReadOne(reader, current.Item2);
-                WriteIndex(writer, 0, next.Item2);
-                sorted = SortedInsert(writer, sorted, current);
-                current = ReadOne(reader, next.Item2);
-            }
+                var currentNode = ReadOne(reader, next);
+                next = currentNode.NextRef;
+                Console.WriteLine($"{currentNode.Data.ToString(),-18}-> {currentNode.NextRef}");
+            } while (next != 0);
 
-            WriteIndex(writer, sorted.Item2, 0);
+            // Node sorted = null;
+            // var current = Head(reader);
+            // do
+            // {
+            //     var next = ReadOne(reader, current.NextRef);
+            //     WriteIndex(writer, 0, current.NextRef);
+            //     sorted = SortedInsert(reader, writer, sorted, current);
+            //     current = ReadOne(reader, next.CurrentRef);
+            // } while (current.CurrentRef != 0);
+
+            // WriteIndex(writer, sorted.CurrentRef, Head(reader).CurrentRef);
 
             fs.Close();
+        }
+
+        private Node Head(BinaryReader br)
+        {
+            return ReadOne(br, 0);
         }
 
         public string StatusString(string label = null)
@@ -58,25 +77,43 @@ namespace Lab1.Code
             throw new NotImplementedException();
         }
 
-        private Tuple<T, int> SortedInsert(BinaryWriter bw, Tuple<T, int> sortedHead, Tuple<T, int> newNode)
+        private Node SortedInsert(BinaryReader br, BinaryWriter bw, Node sortedHead, Node newNode)
         {
             if (sortedHead == null)
             {
                 sortedHead = newNode;
             }
-            else if ((sortedHead).Item1.CompareTo(newNode.Item1) >= 0)
+            else if (sortedHead.Data.CompareTo(newNode.Data) >= 0)
             {
-                WriteIndex(bw, sortedHead.Item2, newNode.Item2);
-                newNode.Next = sortedHead;
+                WriteIndex(bw, sortedHead.CurrentRef, newNode.NextRef);
+                //newNode.Next = sortedHead;
                 //newNode.Next.Previous = newNode;
                 sortedHead = newNode;
             }
-            else { }
+            else
+            {
+                var current = sortedHead;
+                while (
+                    current.NextRef != 0 &&
+                    ReadOne(br, current.NextRef).Data.CompareTo(newNode.Data) < 0
+                )
+                {
+                    current = ReadOne(br, current.NextRef);
+                }
 
-            return sortedHead
+                newNode.NextRef = current.NextRef;
+                // if (current.NextRef != 0 && newNode.NextRef != 0)
+                // {
+                //     newNode.Next.Previous = newNode;
+                // }
+
+                WriteIndex(bw, newNode.CurrentRef, current.NextRef);
+            }
+
+            return sortedHead;
         }
 
-        private Tuple<T, int> ReadOne(BinaryReader br, int i)
+        private Node ReadOne(BinaryReader br, int i)
         {
             var obj = new T();
             int k = GetPosition(i);
@@ -84,7 +121,7 @@ namespace Lab1.Code
             int next = br.ReadInt32();
             obj.DeserializeFromBinary(br);
 
-            return new Tuple<T, int>(obj, next);
+            return new Node(obj, i, next);
         }
 
         private void WriteOne(BinaryWriter bw, T obj, int i)
@@ -104,17 +141,6 @@ namespace Lab1.Code
         private int GetPosition(int i)
         {
             return i * (_typeInstance.ByteSize + IndexSize);
-        }
-
-        private void Swap(BinaryReader br, BinaryWriter bw, int i, int j)
-        {
-            throw new NotImplementedException();
-
-            int pos1 = i * (_typeInstance.ByteSize + IndexSize);
-            int pos2 = j * (_typeInstance.ByteSize + IndexSize);
-
-            br.BaseStream.Seek(pos1, SeekOrigin.Begin);
-            int next = br.ReadInt32();
         }
     }
 }
