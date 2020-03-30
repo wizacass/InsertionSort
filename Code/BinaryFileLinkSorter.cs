@@ -10,7 +10,6 @@ namespace Lab1.Code
             public T Data { get; }
             public int CurrentRef { get; }
             public int NextRef { get; set; }
-
             public int PrevRef { get; set; }
 
             public Node(T data, int currentRef, int? nextRef = null, int? prevRef = null)
@@ -57,18 +56,52 @@ namespace Lab1.Code
             // }
 
             var current = Head(fs, reader);
+            int nextRef = current.NextRef;
             Console.WriteLine($"{current.PrevRef,3} <- [{current.Data.ToString(),-16}] -> {current.NextRef}");
             while (current.NextRef != -1)
             {
                 var previous = current;
-                current = ReadOne(reader, current.NextRef);
+                current = ReadOne(reader, nextRef);
+                nextRef = current.NextRef;
                 Console.WriteLine($"{current.PrevRef,3} <- [{current.Data.ToString(),-16}] -> {current.NextRef}");
 
                 while (previous.PrevRef != -1 && current.Data.CompareTo(previous.Data) < 0)
                 {
-                    System.Console.WriteLine("Test!");
+                    //System.Console.WriteLine("Test!");
                     previous = ReadOne(reader, previous.PrevRef);
                 }
+
+                if (!ReadOne(reader, current.PrevRef).Equals(previous))
+                {
+                    System.Console.WriteLine("Nelygu!");
+                    WriteNextIndex(writer, current.NextRef, current.PrevRef);
+                    if (current.NextRef != -1)
+                    {
+                        WritePreviousIndex(writer, current.PrevRef, current.NextRef);
+                    }
+                    current.NextRef = -1;
+                    current.PrevRef = -1;
+
+                    current.NextRef = previous.NextRef;
+                    current.PrevRef = previous.CurrentRef;
+                    SaveIndexes(writer, current);
+
+                    if (previous.NextRef != -1)
+                    {
+                        WritePreviousIndex(writer, current.CurrentRef, previous.NextRef);
+                    }
+                    WriteNextIndex(writer, current.CurrentRef, previous.CurrentRef);
+                }
+
+                // WritePreviousIndex(writer, current.PrevRef, current.NextRef);
+                // WriteNextIndex(writer, current.NextRef, current.PrevRef);
+
+                // current.NextRef = -1;
+                // current.PrevRef = -1;
+
+                // current.NextRef = previous.CurrentRef;
+                // previous.PrevRef = current.CurrentRef;
+
             }
 
             // Node sorted = null;
@@ -113,7 +146,7 @@ namespace Lab1.Code
             }
             else if (sortedHead.Data.CompareTo(newNode.Data) >= 0)
             {
-                WriteIndex(bw, sortedHead.CurrentRef, newNode.NextRef);
+                WriteNextIndex(bw, sortedHead.CurrentRef, newNode.NextRef);
                 //newNode.Next = sortedHead;
                 //newNode.Next.Previous = newNode;
                 sortedHead = newNode;
@@ -135,7 +168,7 @@ namespace Lab1.Code
                 //     newNode.Next.Previous = newNode;
                 // }
 
-                WriteIndex(bw, newNode.CurrentRef, current.NextRef);
+                WriteNextIndex(bw, newNode.CurrentRef, current.NextRef);
             }
 
             return sortedHead;
@@ -143,6 +176,11 @@ namespace Lab1.Code
 
         private Node ReadOne(BinaryReader br, int i)
         {
+            if (i < 0)
+            {
+                return null;
+            }
+
             var obj = new T();
             int k = i * ByteSize;
             br.BaseStream.Seek(k, SeekOrigin.Begin);
@@ -160,11 +198,24 @@ namespace Lab1.Code
             obj.SerializeToBinary(bw);
         }
 
-        private void WriteIndex(BinaryWriter bw, int index, int i)
+        private void WriteNextIndex(BinaryWriter bw, int index, int i)
         {
             int k = i * ByteSize;
             bw.BaseStream.Seek(k, SeekOrigin.Begin);
             bw.Write(index);
+        }
+
+        private void WritePreviousIndex(BinaryWriter bw, int index, int i)
+        {
+            int k = i * ByteSize + IndexSize;
+            bw.BaseStream.Seek(k, SeekOrigin.Begin);
+            bw.Write(index);
+        }
+
+        private void SaveIndexes(BinaryWriter bw, Node node)
+        {
+            WriteNextIndex(bw, node.NextRef, node.CurrentRef);
+            WritePreviousIndex(bw, node.PrevRef, node.CurrentRef);
         }
 
         private long GetElementsCount(FileStream fs)
