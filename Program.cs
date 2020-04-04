@@ -13,7 +13,7 @@ namespace Lab1
         private const string BinaryArraySortableFilePattern = "Data/BinaryArraySortableGenerated{0}.bin";
         private const string BinaryLinkSortableFilePattern = "Data/BinaryLinkSortableGenerated{0}.bin";
 
-        private const int Generations = 1;
+        private const int Generations = 4;
 
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
@@ -25,7 +25,7 @@ namespace Lab1
         {
             _managers = new List<IDataManager<Earnings>>
             {
-                // new TextDataManager<Earnings>(StandardFilePattern),
+                new TextDataManager<Earnings>(StandardFilePattern),
                 new BinaryDataManager<Earnings>(BinaryFilePattern),
                 new BinaryDataManager<Earnings>(BinaryArraySortableFilePattern),
                 new BinaryLinkDataManager<Earnings>(BinaryLinkSortableFilePattern)
@@ -35,16 +35,16 @@ namespace Lab1
             );
             _runners = new List<IRunnable>
             {
-                //new ArraySorter<Earnings>(_managers[0]),
-                //new LinkedListSorter<Earnings>(_managers[0]),
-                //new ArraySorter<Earnings>(_managers[1]),
-                //new LinkedListSorter<Earnings>(_managers[1]),
-                //new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern),
+                new ArraySorter<Earnings>(_managers[0]),
+                new LinkedListSorter<Earnings>(_managers[0]),
+                new ArraySorter<Earnings>(_managers[1]),
+                new LinkedListSorter<Earnings>(_managers[1]),
+                new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern),
                 new BinaryFileLinkSorter<Earnings>(BinaryLinkSortableFilePattern)
             };
         }
 
-        public void Run()
+        public void Run(bool log = true)
         {
             Console.WriteLine($"Running Sorting test with {Generations} data sets.");
             const int offset = 2;
@@ -58,7 +58,10 @@ namespace Lab1
             }
 
             _logger = new Logger(headers);
-            _logger.WriteHeader();
+            if (log)
+            {
+                _logger.WriteHeader();
+            }
 
             for (int i = 1; i <= Generations; i++)
             {
@@ -81,7 +84,10 @@ namespace Lab1
                     entries[pos++] = new Tuple<string, bool>(sw.ElapsedMilliseconds.ToString(), true);
                 }
 
-                _logger.WriteEntry(entries);
+                if (log)
+                {
+                    _logger.WriteEntry(entries);
+                }
             }
         }
 
@@ -101,7 +107,7 @@ namespace Lab1
 
         private static int CalculateEntries(int i)
         {
-            return 10 * (int)Math.Pow(2, i);
+            return 100 * (int) Math.Pow(2, i);
         }
 
         private static void Main()

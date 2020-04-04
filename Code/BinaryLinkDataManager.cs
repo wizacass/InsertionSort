@@ -13,7 +13,7 @@ namespace Lab1.Code
 
         private readonly T _typeInstance;
 
-        private int _count = 0;
+        private int ByteSize => _typeInstance.ByteSize + 2 * IndexSize;
 
         public BinaryLinkDataManager(string pattern)
         {
@@ -31,7 +31,7 @@ namespace Lab1.Code
                 int next = 0;
                 do
                 {
-                    (var currentObj, int nextRef, int previousRef) = ReadOne(reader, next);
+                    (var currentObj, int nextRef, int _) = ReadOne(reader, next);
                     next = nextRef;
                     items.Add(currentObj);
                 } while (next != 0);
@@ -42,13 +42,15 @@ namespace Lab1.Code
 
         public void Write(T[] data, string fileId)
         {
+            int count = 0;
+
             string filename = string.Format(Pattern, fileId);
             using var writer = new BinaryWriter(File.Open(filename, FileMode.Create));
             foreach (var item in data)
             {
-                int next = ++_count == data.Length ? -1 : _count;
+                int next = ++count == data.Length ? -1 : count;
                 writer.Write(next);
-                writer.Write(_count - 2);
+                writer.Write(count - 2);
                 item.SerializeToBinary(writer);
             }
         }
@@ -56,7 +58,7 @@ namespace Lab1.Code
         private Tuple<T, int, int> ReadOne(BinaryReader br, int i)
         {
             var obj = new T();
-            int k = i * (_typeInstance.ByteSize + IndexSize * 2);
+            int k = i * ByteSize;
             br.BaseStream.Seek(k, SeekOrigin.Begin);
             int next = br.ReadInt32();
             int previous = br.ReadInt32();

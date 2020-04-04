@@ -47,81 +47,69 @@ namespace Lab1.Code
             using var reader = new BinaryReader(fs);
             using var writer = new BinaryWriter(fs);
 
-            // int next = 0;
-            // while (next != -1)
-            // {
-            //     var currentNode = ReadOne(reader, next);
-            //     next = currentNode.NextRef;
-            //     Console.WriteLine($"{currentNode.PrevRef,3} <- [{currentNode.Data.ToString(),-16}] -> {currentNode.NextRef}");
-            // }
-
-            var current = Head(fs, reader);
-            int nextRef = current.NextRef;
-            Console.WriteLine($"{current.PrevRef,3} <- [{current.Data.ToString(),-16}] -> {current.NextRef}");
-            while (current.NextRef != -1)
+            bool sorted = false;
+            while (!sorted)
             {
-                var previous = current;
-                current = ReadOne(reader, nextRef);
-                nextRef = current.NextRef;
-                Console.WriteLine($"{current.PrevRef,3} <- [{current.Data.ToString(),-16}] -> {current.NextRef}");
-
-                while (previous.PrevRef != -1 && current.Data.CompareTo(previous.Data) < 0)
+                sorted = true;
+                var head = Head(reader);
+                int next = head.NextRef;
+                while (next != -1)
                 {
-                    //System.Console.WriteLine("Test!");
-                    previous = ReadOne(reader, previous.PrevRef);
-                }
+                    var currentNode = ReadOne(reader, next);
+                    var previousNode = ReadOne(reader, currentNode.PrevRef);
+                    next = currentNode.NextRef;
 
-                if (!ReadOne(reader, current.PrevRef).Equals(previous))
-                {
-                    System.Console.WriteLine("Nelygu!");
-                    WriteNextIndex(writer, current.NextRef, current.PrevRef);
-                    if (current.NextRef != -1)
+                    if (currentNode.Data.CompareTo(previousNode.Data) >= 0)
                     {
-                        WritePreviousIndex(writer, current.PrevRef, current.NextRef);
+                        continue;
                     }
-                    current.NextRef = -1;
-                    current.PrevRef = -1;
 
-                    current.NextRef = previous.NextRef;
-                    current.PrevRef = previous.CurrentRef;
-                    SaveIndexes(writer, current);
-
-                    if (previous.NextRef != -1)
+                    sorted = false;
+                    while (currentNode.Data.CompareTo(previousNode.Data) >= 0 && previousNode.PrevRef != -1)
                     {
-                        WritePreviousIndex(writer, current.CurrentRef, previous.NextRef);
+                        previousNode = ReadOne(reader, previousNode.PrevRef);
                     }
-                    WriteNextIndex(writer, current.CurrentRef, previous.CurrentRef);
+
+                    Unhook(reader, writer, currentNode);
+
+                    currentNode.NextRef = previousNode.CurrentRef;
+                    currentNode.PrevRef = previousNode.PrevRef;
+                    SaveIndexes(writer, currentNode);
+
+                    previousNode = ReadOne(reader, previousNode.CurrentRef);
+                    if (previousNode.PrevRef != -1)
+                    {
+                        var temp = ReadOne(reader, previousNode.PrevRef);
+                        temp.NextRef = currentNode.CurrentRef;
+                        SaveIndexes(writer, temp);
+                    }
+
+                    previousNode.PrevRef = currentNode.CurrentRef;
+                    SaveIndexes(writer, previousNode);
                 }
-
-                // WritePreviousIndex(writer, current.PrevRef, current.NextRef);
-                // WriteNextIndex(writer, current.NextRef, current.PrevRef);
-
-                // current.NextRef = -1;
-                // current.PrevRef = -1;
-
-                // current.NextRef = previous.CurrentRef;
-                // previous.PrevRef = current.CurrentRef;
-
             }
-
-            // Node sorted = null;
-            // var current = Head(reader);
-            // do
-            // {
-            //     var next = ReadOne(reader, current.NextRef);
-            //     WriteIndex(writer, 0, current.NextRef);
-            //     sorted = SortedInsert(reader, writer, sorted, current);
-            //     current = ReadOne(reader, next.CurrentRef);
-            // } while (current.CurrentRef != 0);
-
-            // WriteIndex(writer, sorted.CurrentRef, Head(reader).CurrentRef);
 
             fs.Close();
         }
 
-        private Node Head(FileStream fs, BinaryReader br)
+        private void Unhook(BinaryReader br, BinaryWriter bw, Node currentNode)
         {
-            long length = GetElementsCount(fs);
+            var temp = ReadOne(br, currentNode.PrevRef);
+            temp.NextRef = currentNode.NextRef;
+            SaveIndexes(bw, temp);
+            if (currentNode.NextRef == -1)
+            {
+                return;
+            }
+
+            temp = ReadOne(br, currentNode.NextRef);
+            temp.PrevRef = currentNode.PrevRef;
+            SaveIndexes(bw, temp);
+        }
+
+        private Node Head(BinaryReader br)
+        {
+            long length = GetElementsCount(br.BaseStream);
             for (int i = 0; i < length; i++)
             {
                 var node = ReadOne(br, i);
@@ -130,48 +118,13 @@ namespace Lab1.Code
                     return node;
                 }
             }
+
             return null;
         }
 
         public string StatusString(string label = null)
         {
             throw new NotImplementedException();
-        }
-
-        private Node SortedInsert(BinaryReader br, BinaryWriter bw, Node sortedHead, Node newNode)
-        {
-            if (sortedHead == null)
-            {
-                sortedHead = newNode;
-            }
-            else if (sortedHead.Data.CompareTo(newNode.Data) >= 0)
-            {
-                WriteNextIndex(bw, sortedHead.CurrentRef, newNode.NextRef);
-                //newNode.Next = sortedHead;
-                //newNode.Next.Previous = newNode;
-                sortedHead = newNode;
-            }
-            else
-            {
-                var current = sortedHead;
-                while (
-                    current.NextRef != 0 &&
-                    ReadOne(br, current.NextRef).Data.CompareTo(newNode.Data) < 0
-                )
-                {
-                    current = ReadOne(br, current.NextRef);
-                }
-
-                newNode.NextRef = current.NextRef;
-                // if (current.NextRef != 0 && newNode.NextRef != 0)
-                // {
-                //     newNode.Next.Previous = newNode;
-                // }
-
-                WriteNextIndex(bw, newNode.CurrentRef, current.NextRef);
-            }
-
-            return sortedHead;
         }
 
         private Node ReadOne(BinaryReader br, int i)
@@ -189,13 +142,6 @@ namespace Lab1.Code
             obj.DeserializeFromBinary(br);
 
             return new Node(obj, i, next, Previous);
-        }
-
-        private void WriteOne(BinaryWriter bw, T obj, int i)
-        {
-            int k = i * ByteSize;
-            bw.BaseStream.Seek(k, SeekOrigin.Begin);
-            obj.SerializeToBinary(bw);
         }
 
         private void WriteNextIndex(BinaryWriter bw, int index, int i)
@@ -218,9 +164,9 @@ namespace Lab1.Code
             WritePreviousIndex(bw, node.PrevRef, node.CurrentRef);
         }
 
-        private long GetElementsCount(FileStream fs)
+        private long GetElementsCount(Stream stream)
         {
-            return fs.Length / ByteSize;
+            return stream.Length / ByteSize;
         }
     }
 }
