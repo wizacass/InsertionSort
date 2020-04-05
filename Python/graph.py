@@ -12,7 +12,7 @@ def show(figurecount, counts, data1, data2):
     plt.plot(counts, data1)
     plt.plot(counts, data2)
     plt.xlabel("Datapoints count")
-    plt.ylabel("Time in miliseconds")
+    plt.ylabel("Time in seconds")
     plt.grid(True)
     plt.axes([0, max(counts), 0, max(data2)])
 
@@ -22,10 +22,10 @@ datafile = open(filepath, "r")
 for line in datafile:
     data = line.split(';')
     counts.append(int(data[1]))
-    data1.append(int(data[2]))
-    data2.append(int(data[3]))
-    data3.append(int(data[4]))
-    data4.append(int(data[5]))
+    data1.append(int(data[2]) / 1000)
+    data2.append(int(data[3]) / 1000)
+    data3.append(int(data[4]) / 1000)
+    data4.append(int(data[5]) / 1000)
 
 datafile.close()
 
