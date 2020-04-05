@@ -3,12 +3,12 @@ using System.Text;
 
 namespace Lab1.Code
 {
-    public class Logger
+    public class ConsoleLogger
     {
         private readonly int[] _spaces;
         private readonly Tuple<string, bool>[] _header;
 
-        public Logger(string[] header)
+        public ConsoleLogger(string[] header)
         {
             _header = PersistHeader(header);
             _spaces = new int[header.Length];

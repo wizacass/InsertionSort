@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Lab1.Code;
 using Lab1.Code.Models;
 
@@ -12,6 +14,7 @@ namespace Lab1
         private const string BinaryFilePattern = "Data/BinaryGenerated{0}.bin";
         private const string BinaryArraySortableFilePattern = "Data/BinaryArraySortableGenerated{0}.bin";
         private const string BinaryLinkSortableFilePattern = "Data/BinaryLinkSortableGenerated{0}.bin";
+        private const string CsvFilePattern = "Logs/log {0}.csv";
 
         private const int Generations = 4;
 
@@ -19,13 +22,13 @@ namespace Lab1
         private readonly IDataFactory<Earnings> _factory;
         private readonly List<IRunnable> _runners;
 
-        private Logger _logger;
+        private ConsoleLogger _logger;
 
         public Program()
         {
             _managers = new List<IDataManager<Earnings>>
             {
-                new TextDataManager<Earnings>(StandardFilePattern),
+                //new TextDataManager<Earnings>(StandardFilePattern),
                 new BinaryDataManager<Earnings>(BinaryFilePattern),
                 new BinaryDataManager<Earnings>(BinaryArraySortableFilePattern),
                 new BinaryLinkDataManager<Earnings>(BinaryLinkSortableFilePattern)
@@ -35,8 +38,8 @@ namespace Lab1
             );
             _runners = new List<IRunnable>
             {
-                new ArraySorter<Earnings>(_managers[0]),
-                new LinkedListSorter<Earnings>(_managers[0]),
+                //new ArraySorter<Earnings>(_managers[0]),
+                //new LinkedListSorter<Earnings>(_managers[0]),
                 new ArraySorter<Earnings>(_managers[1]),
                 new LinkedListSorter<Earnings>(_managers[1]),
                 new BinaryFileArraySorter<Earnings>(BinaryArraySortableFilePattern),
@@ -57,14 +60,20 @@ namespace Lab1
                 headers[i + offset] = _runners[i].Id;
             }
 
-            _logger = new Logger(headers);
+            _logger = new ConsoleLogger(headers);
             if (log)
             {
                 _logger.WriteHeader();
             }
 
+            using var csvWriter = new StreamWriter(string.Format(CsvFilePattern, DateTime.Now).Replace(':', '.'));
             for (int i = 1; i <= Generations; i++)
             {
+                if (!log)
+                {
+                    Console.WriteLine($"Running Generation {i}...");
+                }
+
                 int pos = offset;
                 var entries = new Tuple<string, bool>[length];
                 entries[0] = new Tuple<string, bool>(i.ToString(), true);
@@ -88,6 +97,13 @@ namespace Lab1
                 {
                     _logger.WriteEntry(entries);
                 }
+
+                csvWriter.WriteLine(entries.Aggregate(string.Empty, (current, entry) => current + $"{entry.Item1};"));
+            }
+
+            if (!log)
+            {
+                Console.WriteLine("Test complete!");
             }
         }
 
@@ -114,7 +130,7 @@ namespace Lab1
         {
             var p = new Program();
             p.Generate();
-            p.Run();
+            p.Run(false);
         }
     }
 }
