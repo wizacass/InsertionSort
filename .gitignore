@@ -7,5 +7,6 @@ obj/
 BuildnRun.sh
 Data/
 Logs/
+Python/graphs
 *.sln*
 .DS_Store

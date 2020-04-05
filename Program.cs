@@ -16,7 +16,7 @@ namespace Lab1
         private const string BinaryLinkSortableFilePattern = "Data/BinaryLinkSortableGenerated{0}.bin";
         private const string CsvFilePattern = "Logs/log {0}.csv";
 
-        private const int Generations = 4;
+        private const int Generations = 8;
 
         private readonly List<IDataManager<Earnings>> _managers;
         private readonly IDataFactory<Earnings> _factory;
@@ -124,7 +124,7 @@ namespace Lab1
 
         private static int CalculateEntries(int i)
         {
-            return 100 * (int)Math.Pow(2, i);
+            return 10 * (int)Math.Pow(2, i);
         }
 
         private static void Main()
