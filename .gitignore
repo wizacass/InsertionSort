@@ -6,5 +6,6 @@ obj/
 .github/
 BuildnRun.sh
 Data/
+Logs/
 *.sln*
 .DS_Store

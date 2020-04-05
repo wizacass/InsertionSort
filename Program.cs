@@ -66,7 +66,8 @@ namespace Lab1
                 _logger.WriteHeader();
             }
 
-            using var csvWriter = new StreamWriter(string.Format(CsvFilePattern, DateTime.Now).Replace(':', '.'));
+            string path = string.Format(CsvFilePattern, DateTime.Now.ToString().Replace('/', '-')).Replace(':', '.');
+            using var csvWriter = new StreamWriter(path);
             for (int i = 1; i <= Generations; i++)
             {
                 if (!log)
@@ -123,7 +124,7 @@ namespace Lab1
 
         private static int CalculateEntries(int i)
         {
-            return 100 * (int) Math.Pow(2, i);
+            return 100 * (int)Math.Pow(2, i);
         }
 
         private static void Main()
