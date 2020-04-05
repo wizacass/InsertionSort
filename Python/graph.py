@@ -31,10 +31,11 @@ def analyze(filepath):
 def plot(datafile, figurecount, counts, data1, data2):
     path = f"{graphsdir}{datafile} {figurecount}.png"
     plt.figure(figurecount)
-    plt.plot(counts, data1)
-    plt.plot(counts, data2)
+    fig1, = plt.plot(counts, data1, label="Array")
+    fig2, = plt.plot(counts, data2, label="Linked List")
     plt.xlabel("Datapoints count")
     plt.ylabel("Time in seconds")
+    plt.legend(handles=[fig1, fig2])
     plt.grid(True)
     plt.axes([0, max(counts), 0, max(data2)])
     plt.savefig(path)
