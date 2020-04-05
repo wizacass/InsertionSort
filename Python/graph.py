@@ -4,14 +4,14 @@ import glob
 logsdir = "Logs/"
 graphsdir = "Python/graphs/"
 
-counts = []
-data1 = []
-data2 = []
-data3 = []
-data4 = []
-
 
 def analyze(filepath):
+    counts = []
+    data1 = []
+    data2 = []
+    data3 = []
+    data4 = []
+
     datafile = open(filepath, "r")
     for line in datafile:
         data = line.split(';')
